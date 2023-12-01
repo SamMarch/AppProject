@@ -5,52 +5,72 @@ import TodoList from './TodoList';
 
 const App: React.FC = () => {
   const [todos, setTodos] = useState([
-    { id: '1', text: 'Task 1', priority: 1, urgency: 2 },
-    { id: '2', text: 'Task 2', priority: 2, urgency: 1 },
-    // Add more tasks as needed
+    { id: '1', text: 'Default Task', priority: 2, urgency: 1 },
   ]);
 
   const handleDrop = (id: string, targetList: 'priority' | 'urgency') => {
-    const updatedTodos = todos.map((todo) =>
-      todo.id === id ? { ...todo, [targetList]: todo[targetList] + 1 } : todo
-    );
-    setTodos(updatedTodos);
-  };
-
-  const [newTodo, setNewTodo] = useState('');
+    setTodos((prevTodos) => {
+      const updatedTodos = prevTodos.map((todo) => {
+        if (todo.id === id) {
+          let targetPriority = todo.priority;
+          let targetUrgency = todo.urgency;
+  
+          if (targetList === 'priority') {
+            // Increase priority only if it's not already at the maximum (3)
+            // Decrease priority only if it's not already at the minimum (1)
+            targetPriority = targetPriority < 3 ? targetPriority + 1 : targetPriority > 1 ? targetPriority - 1 : targetPriority;
+          } else if (targetList === 'urgency') {
+            // Increase urgency only if it's not already at the maximum (3)
+            // Decrease urgency only if it's not already at the minimum (1)
+            targetUrgency = targetUrgency < 3 ? targetUrgency + 1 : targetUrgency > 1 ? targetUrgency - 1 : targetUrgency;
+          }
+  
+          return {
+            ...todo,
+            priority: targetPriority,
+            urgency: targetUrgency,
+          };
+        }
+        return todo;
+      });
+  
+      return updatedTodos;
+    });
+  };  
+  
+  
 
   const handleAddTodo = () => {
-    if (newTodo.trim() !== '') {
-      // Generate a unique ID for the new todo item
-      const newTodoItem = {
-        id: Date.now().toString(),
-        text: newTodo.trim(),
-        priority: 1, // Set a default priority, adjust as needed
-        urgency: 1, // Set a default urgency, adjust as needed
-      };
+    const newTodoItem = {
+      id: Date.now().toString(),
+      text: 'New Task',
+      priority: 1,
+      urgency: 1,
+    };
 
-      // Update the state to include the new todo item
-      setTodos([...todos, newTodoItem]);
-
-      // Clear the input field
-      setNewTodo('');
-    }
+    setTodos([newTodoItem, ...todos]);
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-around', padding: '20px' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', padding: '20px' }}>
       <DndProvider backend={HTML5Backend}>
-        <TodoList title="Low Priority" items={todos.filter((todo) => todo.priority === 1)} onDrop={handleDrop} />
-        <TodoList title="Medium Priority" items={todos.filter((todo) => todo.priority === 2)} onDrop={handleDrop} />
-        <TodoList title="High Priority" items={todos.filter((todo) => todo.priority === 3)} onDrop={handleDrop} />
+        <TodoList
+          title="Low Priority / Low Urgency"
+          items={todos.filter((todo) => todo.priority === 1 && todo.urgency === 1)}
+          onDrop={(id) => handleDrop(id, 'priority')}
+        />
+        <TodoList
+          title="Medium Priority / Low Urgency"
+          items={todos.filter((todo) => todo.priority === 2 && todo.urgency === 1)}
+          onDrop={(id) => handleDrop(id, 'priority')}
+        />
+        <TodoList
+          title="High Priority / Low Urgency"
+          items={todos.filter((todo) => todo.priority === 3 && todo.urgency === 1)}
+          onDrop={(id) => handleDrop(id, 'priority')}
+        />
       </DndProvider>
       <div>
-        <input
-          type="text"
-          value={newTodo}
-          onChange={(e) => setNewTodo(e.target.value)}
-          placeholder="Enter a new todo"
-        />
         <button onClick={handleAddTodo}>Add Todo</button>
       </div>
     </div>
