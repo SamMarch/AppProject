@@ -1,5 +1,7 @@
+// src/App.tsx
 import React, { useState, useEffect } from 'react';
-import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
+import { DragDropContext, DropResult } from 'react-beautiful-dnd';
+import ItemList from './ItemList';
 
 const getItems = (count: number) =>
   Array.from({ length: count }, (v, k) => k).map((k) => ({
@@ -38,27 +40,7 @@ const App = () => {
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable droppableId="droppable">
-        {(provided) => (
-          <div {...provided.droppableProps} ref={provided.innerRef}>
-            {items.map((item, index) => (
-              <Draggable key={item.id} draggableId={item.id} index={index}>
-                {(provided) => (
-                  <div
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                    {...provided.dragHandleProps}
-                    className="draggable-item"
-                  >
-                    {item.content}
-                  </div>
-                )}
-              </Draggable>
-            ))}
-            {provided.placeholder}
-          </div>
-        )}
-      </Droppable>
+      <ItemList items={items} />
     </DragDropContext>
   );
 };
