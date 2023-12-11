@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 
 const getItems = (count: number) =>
@@ -13,7 +13,18 @@ interface Item {
 }
 
 const App = () => {
-  const [items, setItems] = useState<Item[]>(getItems(10));
+  const [items, setItems] = useState<Item[]>(() => {
+    const savedItems = localStorage.getItem('items');
+    if (savedItems) {
+      return JSON.parse(savedItems);
+    } else {
+      return getItems(10);
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem('items', JSON.stringify(items));
+  }, [items]);
 
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) return;
