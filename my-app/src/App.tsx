@@ -38,9 +38,23 @@ const App = () => {
     setItems(newItems);
   };
 
+  const addItem = () => {
+    const newItem = {
+      id: `item-${Date.now()}`, // Use a timestamp to ensure uniqueness
+      content: `item ${items.length}`,
+    };
+
+    setItems((prevItems) => [...prevItems, newItem]);
+  };
+
+  const deleteItem = (id: string) => {
+    setItems((prevItems) => prevItems.filter((item) => item.id !== id));
+  };
+
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <ItemList items={items} />
+      <button onClick={addItem}>Add Item</button>
+      <ItemList items={items} deleteItem={deleteItem} />
     </DragDropContext>
   );
 };

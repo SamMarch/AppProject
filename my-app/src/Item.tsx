@@ -5,9 +5,10 @@ import { Draggable } from 'react-beautiful-dnd';
 interface ItemProps {
     item: { id: string; content: string };
     index: number;
+    deleteItem: (id: string) => void;
 }
 
-const Item: React.FC<ItemProps> = ({ item, index }) => (
+const Item: React.FC<ItemProps> = ({ item, index, deleteItem }) => (
     <Draggable key={item.id} draggableId={item.id} index={index}>
         {(provided) => (
             <div
@@ -17,6 +18,7 @@ const Item: React.FC<ItemProps> = ({ item, index }) => (
                 className="draggable-item"
             >
                 {item.content}
+                <button onClick={() => deleteItem(item.id)}>Delete</button>
             </div>
         )}
     </Draggable>
